@@ -1,90 +1,76 @@
 #include "sort.h"
 
+void combineArrays(int *src, int *buf, size_t st, size_t md, size_t en);
+void sortHelper(int *src, int *buf, size_t st, size_t en);
+
 /**
- * merge - Merges two sub-arrays of integers.
- * @array: The array of integers.
- * @temp: The temp array to hold sorted integers.
- * @left: The left index of the sub-array.
- * @mid: The middle index to divide the sub-array.
- * @right: The right index of the sub-array.
+ * combineArrays - Sort a subarray of integers.
+ * @src: The source subarray.
+ * @buf: Buffer to store sorted values.
+ * @st: The start index.
+ * @md: Middle index.
+ * @en: The end index.
  */
-void merge(int *array, int *temp, int left, int mid, int right)
+void combineArrays(int *src, int *buf, size_t st, size_t md, size_t en)
 {
-	int i, j, k;
+	size_t i, j, k = 0;
 
-	printf("Merging...\n");
-	i = left;
-	j = mid;
-	k = left;
-
-	while (i < mid && j <= right)
-	{
-		if (array[i] < array[j])
-			temp[k++] = array[i++];
-		else
-			temp[k++] = array[j++];
-	}
-
-	while (i < mid)
-		temp[k++] = array[i++];
-
-	while (j <= right)
-		temp[k++] = array[j++];
-
-	for (i = left; i <= right; i++)
-		array[i] = temp[i];
-
-	printf("[left]: ");
-	print_array(array + left, mid - left);
+	printf("Merging...\n[left]: ");
+	print_array(src + st, md - st);
 	printf("[right]: ");
-	print_array(array + mid, right - mid + 1);
+	print_array(src + md, en - md);
+
+	for (i = st, j = md; i < md && j < en; k++)
+		buf[k] = (src[i] < src[j]) ? src[i++] : src[j++];
+	for (; i < md; i++)
+		buf[k++] = src[i];
+	for (; j < en; j++)
+		buf[k++] = src[j];
+	for (i = st, k = 0; i < en; i++)
+		src[i] = buf[k++];
+
 	printf("[Done]: ");
-	print_array(array + left, right - left + 1);
+	print_array(src + st, en - st);
 }
 
 /**
- * merge_split - Splits the array and calls merge function.
- * @array: The array of integers.
- * @temp: The temp array to hold sorted integers.
- * @left: The left index of the sub-array.
- * @right: The right index of the sub-array.
+ * sortHelper - Recursive function for merge sort.
+ * @src: The source subarray.
+ * @buf: Buffer to store sorted values.
+ * @st: Start index.
+ * @en: End index.
  */
-void merge_split(int *array, int *temp, int left, int right)
+void sortHelper(int *src, int *buf, size_t st, size_t en)
 {
-	int mid;
+	size_t md;
 
-	if (right > left)
+	if (en - st > 1)
 	{
-		mid = (right + left) / 2;
-
-		merge_split(array, temp, left, mid);
-		merge_split(array, temp, mid + 1, right);
-
-		merge(array, temp, left, mid + 1, right);
+		md = st + (en - st) / 2;
+		sortHelper(src, buf, st, md);
+		sortHelper(src, buf, md, en);
+		combineArrays(src, buf, st, md, en);
 	}
 }
 
 /**
- * merge_sort - Sorts an array of integers using the Merge sort algorithm.
- * @array: The array of integers.
- * @size: The size of the array.
+ * merge_sort - The main merge sort function.
+ * @array: Array to be sorted.
+ * @size: Size of the array.
  */
 void merge_sort(int *array, size_t size)
 {
-	int *temp;
-	size_t i;
+	int *buf;
 
 	if (array == NULL || size < 2)
 		return;
 
-	temp = malloc(sizeof(int) * size);
-	if (temp == NULL)
+	buf = malloc(sizeof(int) * size);
+	if (buf == NULL)
 		return;
 
-	for (i = 0; i < size; i++)
-		temp[i] = array[i];
+	sortHelper(array, buf, 0, size);
 
-	merge_split(array, temp, 0, size - 1);
-
-	free(temp);
+	free(buf);
 }
+
