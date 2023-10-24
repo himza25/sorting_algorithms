@@ -4,6 +4,20 @@ void swap(int *a, int *b, int *array, size_t size);
 void hoare_qsort(int *array, int low, int high, size_t size);
 
 /**
+ * swap_elem - Swap two integers.
+ * @a: The first int.
+ * @b: The second int.
+ */
+void swap_elem(int *a, int *b)
+{
+	int tmp;
+
+	tmp = *a;
+	*a = *b;
+	*b = tmp;
+}
+
+/**
  * quick_sort_hoare - Sorts an array of integers using quick sort algorithm
  * @array: array of integers
  * @size: size of the array
