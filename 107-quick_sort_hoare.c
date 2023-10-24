@@ -1,67 +1,77 @@
 #include "sort.h"
 
+void exchange_elements(int *x, int *y);
+int hoare_divide(int *arr, size_t sz, int start, int end);
+void hoare_recursive_sort(int *arr, size_t sz, int start, int end);
+
 /**
- * my_swap - Swap two integers.
- * @a: Pointer to the first integer.
- * @b: Pointer to the second integer.
+ * exchange_elements - Exchange two integer elements in an array.
+ * @x: The first integer to exchange.
+ * @y: The second integer to exchange.
  */
-void my_swap(int *a, int *b)
+void exchange_elements(int *x, int *y)
 {
-	int tmp = *a;
-	*a = *b;
-	*b = tmp;
+	int temp;
+
+	temp = *x;
+	*x = *y;
+	*y = temp;
 }
 
 /**
- * my_partition - Applies partition logic to sub-array.
- * @arr: Array being sorted.
- * @size: Size of array.
- * @left: Starting index.
- * @right: Ending index.
+ * hoare_divide - Reorganize a sub-array according to the Hoare partition.
+ * @arr: The array of integers.
+ * @sz: The size of the array.
+ * @start: The starting index of the sub-array to organize.
+ * @end: The ending index of the sub-array to organize.
  *
- * Return: New partition index.
+ * Return: The final partition index.
+ *
+ * Description: Utilizes the last element of the partition as the pivot.
+ * Outputs the array after each element exchange.
  */
-int my_partition(int *arr, size_t size, int left, int right)
+int hoare_divide(int *arr, size_t sz, int start, int end)
 {
-	int pivot = arr[right];
-	int above = left - 1;
-	int below = right + 1;
+	int pivot_element, higher, lower;
 
-	while (above < below)
+	pivot_element = arr[end];
+	for (higher = start - 1, lower = end + 1; higher < lower;)
 	{
 		do {
-			above++;
-		} while (arr[above] < pivot);
-
+			higher++;
+		} while (arr[higher] < pivot_element);
 		do {
-			below--;
-		} while (arr[below] > pivot);
+			lower--;
+		} while (arr[lower] > pivot_element);
 
-		if (above < below)
+		if (higher < lower)
 		{
-			my_swap(&arr[above], &arr[below]);
-			print_array(arr, size);
+			exchange_elements(arr + higher, arr + lower);
+			print_array(arr, sz);
 		}
 	}
 
-	return (above);
+	return (higher);
 }
 
 /**
- * my_sort - Recursive quicksort logic.
- * @arr: Array being sorted.
- * @size: Size of array.
- * @left: Starting index.
- * @right: Ending index.
+ * hoare_recursive_sort - Execute the quicksort algorithm recursively.
+ * @arr: An array of integers to sort.
+ * @sz: The size of the array.
+ * @start: The start index of the array partition to organize.
+ * @end: The end index of the array partition to organize.
+ *
+ * Description: Utilizes the Hoare partition scheme.
  */
-void my_sort(int *arr, size_t size, int left, int right)
+void hoare_recursive_sort(int *arr, size_t sz, int start, int end)
 {
-	if (right > left)
-	{
-		int part = my_partition(arr, size, left, right);
+	int partition_idx;
 
-		my_sort(arr, size, left, part - 1);
-		my_sort(arr, size, part, right);
+	if (end - start > 0)
+	{
+		partition_idx = hoare_divide(arr, sz, start, end);
+		hoare_recursive_sort(arr, sz, start, partition_idx - 1);
+		hoare_recursive_sort(arr, sz, partition_idx, end);
 	}
 }
 
@@ -79,5 +89,5 @@ void quick_sort_hoare(int *array, size_t size)
 	if (array == NULL || size < 2)
 		return;
 
-	hoare_sort(array, size, 0, size - 1);
+	hoare_recursive_sort(array, size, 0, size - 1);
 }
