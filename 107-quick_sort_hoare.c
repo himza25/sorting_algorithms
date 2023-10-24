@@ -4,38 +4,23 @@ void swap(int *a, int *b, int *array, size_t size);
 void hoare_qsort(int *array, int low, int high, size_t size);
 
 /**
- * swap_elem - Swap two integers.
- * @a: The first int.
- * @b: The second int.
- */
-void swap_elem(int *a, int *b)
-{
-	int tmp;
-
-	tmp = *a;
-	*a = *b;
-	*b = tmp;
-}
-
-/**
- * quick_sort_hoare - Sorts an array of integers using quick sort algorithm
- * @array: array of integers
- * @size: size of the array
+ * quick_sort_hoare - Sort array using quick sort algorithm
+ * @array: Pointer to the array
+ * @size: Size of the array
  */
 void quick_sort_hoare(int *array, size_t size)
 {
 	if (size < 2 || !array)
 		return;
-
 	hoare_qsort(array, 0, size - 1, size);
 }
 
 /**
- * hoare_qsort - Implementation of quick sort using Hoare scheme
- * @array: array of integers
- * @low: lower bound
- * @high: upper bound
- * @size: size of the array
+ * hoare_qsort - Quick sort with Hoare partition scheme
+ * @array: Pointer to the array
+ * @low: Lower bound
+ * @high: Upper bound
+ * @size: Size of the array
  */
 void hoare_qsort(int *array, int low, int high, size_t size)
 {
@@ -65,11 +50,11 @@ void hoare_qsort(int *array, int low, int high, size_t size)
 }
 
 /**
- * swap - Swaps two integers
- * @a: first integer
- * @b: second integer
- * @array: array of integers for print_array
- * @size: size of the array for print_array
+ * swap - Swap two integers in the array
+ * @a: Pointer to first integer
+ * @b: Pointer to second integer
+ * @array: Pointer to the array
+ * @size: Size of the array
  */
 void swap(int *a, int *b, int *array, size_t size)
 {
