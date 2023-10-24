@@ -1,4 +1,5 @@
 #include "sort.h"
+#include <stdio.h>
 
 /**
  * get_max - Get the maximum value in an array of integers.
@@ -21,6 +22,46 @@ int get_max(int *array, int size)
 }
 
 /**
+ * initialize_count - Initialize count array to zero.
+ * @count: The count array.
+ * @max: The maximum integer in the array.
+ */
+void initialize_count(int *count, int max)
+{
+	int i;
+
+	for (i = 0; i <= max; i++)
+		count[i] = 0;
+}
+
+/**
+ * fill_count - Fill the count array.
+ * @count: The count array.
+ * @array: The original array.
+ * @size: Size of the array.
+ */
+void fill_count(int *count, int *array, size_t size)
+{
+	int i;
+
+	for (i = 0; i < (int)size; i++)
+		count[array[i]]++;
+}
+
+/**
+ * cumulative_count - Calculate cumulative sum of the count array.
+ * @count: The count array.
+ * @max: The maximum integer in the array.
+ */
+void cumulative_count(int *count, int max)
+{
+	int i;
+
+	for (i = 1; i <= max; i++)
+		count[i] += count[i - 1];
+}
+
+/**
  * counting_sort - Sort an array of integers in ascending order
  *                 using the counting sort algorithm.
  * @array: An array of integers.
@@ -38,6 +79,7 @@ void counting_sort(int *array, size_t size)
 	sorted = malloc(sizeof(int) * size);
 	if (sorted == NULL)
 		return;
+
 	max = get_max(array, size);
 	count = malloc(sizeof(int) * (max + 1));
 	if (count == NULL)
@@ -46,18 +88,15 @@ void counting_sort(int *array, size_t size)
 		return;
 	}
 
-	for (i = 0; i < (max + 1); i++)
-		count[i] = 0;
-	for (i = 0; i < (int)size; i++)
-		count[array[i]] += 1;
-	for (i = 0; i < (max + 1); i++)
-		count[i] += count[i - 1];
+	initialize_count(count, max);
+	fill_count(count, array, size);
+	cumulative_count(count, max);
 	print_array(count, max + 1);
 
 	for (i = 0; i < (int)size; i++)
 	{
 		sorted[count[array[i]] - 1] = array[i];
-		count[array[i]] -= 1;
+		count[array[i]]--;
 	}
 
 	for (i = 0; i < (int)size; i++)
@@ -66,3 +105,4 @@ void counting_sort(int *array, size_t size)
 	free(sorted);
 	free(count);
 }
+
