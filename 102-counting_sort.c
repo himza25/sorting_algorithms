@@ -2,68 +2,89 @@
 #include <stdio.h>
 
 /**
- * fill_output - Fills the output array using the counting array
- * @count: Counting array
- * @output: Output array
- * @array: Original array
- * @size: Size of the array
- * @max: Maximum element in the array
+ * find_max - Find max element in an array
+ * @array: The array
+ * @size: The size of the array
+ * @max: The max element
  */
-void fill_output(int *count, int *output, int *array, size_t size, int max)
+void find_max(int *array, size_t size, int *max)
 {
-	int i;
+	size_t i;
 
-	/* Build the output array */
-	for (i = 0; i < (int)size; i++)
+	for (i = 0; i < size; i++)
 	{
-		output[count[array[i]] - 1] = array[i];
-		count[array[i]]--;
+		if (array[i] > *max)
+			*max = array[i];
 	}
 }
 
 /**
- * counting_sort - Sorts an array using counting sort algorithm
- * @array: Pointer to array of integers
- * @size: Size of the array
- *
- * Return: void
+ * count_elements - Count occurrences of each distinct element
+ * @array: The array
+ * @size: The size of the array
+ * @count: The count array
+ * @max: The max element
  */
-void counting_sort(int *array, size_t size)
+void count_elements(int *array, size_t size, int *count, int max)
 {
-	int *count, *output, i, max = 0;
+	size_t i;
 
-	if (!array || size < 2)
-		return;
-
-	for (i = 0; i < (int)size; i++)
-		if (array[i] > max)
-			max = array[i];
-
-	count = malloc((max + 1) * sizeof(int));
-	if (!count)
-		return;
-
-	for (i = 0; i <= max; i++)
-		count[i] = 0;
-
-	for (i = 0; i < (int)size; i++)
+	for (i = 0; i < size; i++)
 		count[array[i]]++;
+}
+
+/**
+ * cum_sum - Calculate the cumulative sum of the array
+ * @count: The count array
+ * @max: The max element
+ */
+void cum_sum(int *count, int max)
+{
+	int i;
 
 	for (i = 1; i <= max; i++)
 		count[i] += count[i - 1];
+}
 
+/**
+ * counting_sort - Sorts using the counting sort algorithm
+ * @array: The array to be sorted
+ * @size: The size of the array
+ */
+void counting_sort(int *array, size_t size)
+{
+	int max = 0, *count = NULL, *output = NULL;
+	size_t i;
+
+	if (size < 2)
+		return;
+
+	find_max(array, size, &max);
+	count = malloc((max + 1) * sizeof(int));
+	if (count == NULL)
+		return;
+
+	for (i = 0; i <= (size_t)max; i++)
+		count[i] = 0;
+
+	count_elements(array, size, count, max);
+	cum_sum(count, max);
 	print_array(count, max + 1);
 
 	output = malloc(size * sizeof(int));
-	if (!output)
+	if (output == NULL)
 	{
 		free(count);
 		return;
 	}
 
-	fill_output(count, output, array, size, max);
+	for (i = 0; i < size; i++)
+	{
+		output[count[array[i]] - 1] = array[i];
+		count[array[i]]--;
+	}
 
-	for (i = 0; i < (int)size; i++)
+	for (i = 0; i < size; i++)
 		array[i] = output[i];
 
 	free(count);
