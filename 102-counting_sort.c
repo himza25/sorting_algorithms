@@ -1,3 +1,26 @@
+#include "sort.h"
+#include <stdio.h>
+
+/**
+ * fill_output - Fills the output array using the counting array
+ * @count: Counting array
+ * @output: Output array
+ * @array: Original array
+ * @size: Size of the array
+ * @max: Maximum element in the array
+ */
+void fill_output(int *count, int *output, int *array, size_t size, int max)
+{
+	int i;
+
+	/* Build the output array */
+	for (i = 0; i < (int)size; i++)
+	{
+		output[count[array[i]] - 1] = array[i];
+		count[array[i]]--;
+	}
+}
+
 /**
  * counting_sort - Sorts an array using counting sort algorithm
  * @array: Pointer to array of integers
