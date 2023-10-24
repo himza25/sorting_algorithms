@@ -1,8 +1,5 @@
 #include "sort.h"
 
-void swap_elements(int *elem1, int *elem2);
-void build_max_heap(int *arr, size_t arr_size, size_t heap_size, size_t root_idx);
-void heap_sort(int *arr, size_t arr_size);
 
 /**
  * swap_elements - Swap two integers in an array.
@@ -39,7 +36,8 @@ void build_max_heap(int *arr, size_t arr_size, size_t heap_size,
 	if (right_idx < heap_size && arr[right_idx] > arr[largest_idx])
 		largest_idx = right_idx;
 
-	if (largest_idx != root_idx) {
+	if (largest_idx != root_idx)
+	{
 		swap_elements(arr + root_idx, arr + largest_idx);
 		print_array(arr, arr_size);
 		build_max_heap(arr, arr_size, heap_size, largest_idx);
@@ -64,7 +62,8 @@ void heap_sort(int *arr, size_t arr_size)
 	for (i = (arr_size / 2) - 1; i >= 0; i--)
 		build_max_heap(arr, arr_size, arr_size, i);
 
-	for (i = arr_size - 1; i > 0; i--) {
+	for (i = arr_size - 1; i > 0; i--)
+	{
 		swap_elements(arr, arr + i);
 		print_array(arr, arr_size);
 		build_max_heap(arr, arr_size, i, 0);
