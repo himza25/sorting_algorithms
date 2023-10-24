@@ -1,5 +1,12 @@
 #include "sort.h"
 
+void swap_elements(int *a, int *b);
+void merge_bitonic_seq(int *array, size_t size, size_t start, size_t seq,
+		char dir);
+void create_bitonic_seq(int *array, size_t size, size_t start, size_t seq,
+		char dir);
+void sort_bitonic(int *array, size_t size);
+
 /**
  * swap_elements - Swap two integers in an array.
  * @a: The first integer to swap.
@@ -80,3 +87,4 @@ void sort_bitonic(int *array, size_t size)
 
 	create_bitonic_seq(array, size, 0, size, UP);
 }
+
