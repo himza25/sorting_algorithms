@@ -1,69 +1,87 @@
 #include "deck.h"
 #include <stdlib.h>
-#include <string.h>
 
 /**
- * card_value - Get numerical value of card
- * @card: Card string
- * Return: Numerical value
+ * get_card_value - gets the numerical value of a card.
+ * @card: pointer to a card.
+ *
+ * Return: numerical value of the card.
  */
-static int card_value(const char *card)
+int get_card_value(const card_t *card)
 {
-	if (strcmp(card, "Ace") == 0)
+	/* Handle face cards and ace */
+	if (card->value[0] == 'A')
 		return (1);
-	if (strcmp(card, "Jack") == 0)
-		return (11);
-	if (strcmp(card, "Queen") == 0)
-		return (12);
-	if (strcmp(card, "King") == 0)
+	if (card->value[0] == 'K')
 		return (13);
-	return (atoi(card));
+	if (card->value[0] == 'Q')
+		return (12);
+	if (card->value[0] == 'J')
+		return (11);
+	return (atoi(card->value));
 }
 
 /**
- * cmp_nodes - Compare two cards
- * @node1: First node
- * @node2: Second node
- * Return: 1 if node1 > node2 else 0
+ * card_compare - compares two cards.
+ * @a: pointer to a card pointer.
+ * @b: pointer to a card pointer.
+ *
+ * Return: negative if a < b, 0 if a == b, positive if a > b.
  */
-static int cmp_nodes(deck_node_t *node1, deck_node_t *node2)
+int card_compare(const void *a, const void *b)
 {
-	int val1 = card_value(node1->card->value);
-	int val2 = card_value(node2->card->value);
-	int kind1 = node1->card->kind;
-	int kind2 = node2->card->kind;
+	const card_t *card_a = *(const card_t **)a;
+	const card_t *card_b = *(const card_t **)b;
+	int suit_diff = card_b->kind - card_a->kind;
 
-	if (kind1 == kind2)
-		return (val1 > val2);
-	return (kind1 > kind2);
+	if (suit_diff)
+		return (suit_diff);
+	return (get_card_value(card_a) - get_card_value(card_b));
 }
 
 /**
- * sort_deck - Sort deck of cards
- * @deck: Pointer to deck
+ * list_to_array - converts a linked list to an array.
+ * @deck: pointer to the head of the linked list.
+ * @arr: pointer to an array of card pointers.
+ */
+void list_to_array(deck_node_t *deck, const card_t **arr)
+{
+	size_t i = 0;
+
+	while (deck)
+	{
+		arr[i++] = deck->card;
+		deck = deck->next;
+	}
+}
+
+/**
+ * array_to_list - converts an array to a linked list.
+ * @arr: pointer to an array of card pointers.
+ * @deck: pointer to the head of the linked list.
+ */
+void array_to_list(const card_t **arr, deck_node_t *deck)
+{
+	size_t i;
+
+	for (i = 0; i < 51; ++i)
+	{
+		deck->card = arr[i];
+		deck = deck->next;
+	}
+	deck->card = arr[i];
+	deck->next = NULL;
+}
+
+/**
+ * sort_deck - sorts a deck of cards.
+ * @deck: double pointer to the head of the linked list.
  */
 void sort_deck(deck_node_t **deck)
 {
-	deck_node_t *curr, *next, *tmp;
+	const card_t *arr[52];
 
-	if (!deck || !*deck || !(*deck)->next)
-		return;
-
-	for (curr = *deck; curr; curr = next)
-	{
-		next = curr->next;
-		for (tmp = curr; tmp->prev && cmp_nodes(tmp, tmp->prev); tmp = tmp->prev)
-		{
-			tmp->prev->next = tmp->next;
-			if (tmp->next)
-				tmp->next->prev = tmp->prev;
-			tmp->next = tmp->prev;
-			tmp->prev = tmp->prev->prev;
-			tmp->next->prev = tmp;
-			if (tmp->prev)
-				tmp->prev->next = tmp;
-			else
-				*deck = tmp;
-		}
-	}
+	list_to_array(*deck, arr);
+	qsort(arr, 52, sizeof(card_t *), card_compare);
+	array_to_list(arr, *deck);
 }
