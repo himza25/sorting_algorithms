@@ -3,76 +3,67 @@
 #include <string.h>
 
 /**
- * card_value - Get card's numerical value.
- * @value: Card name.
- * Return: Numerical value of the card.
+ * card_value - Get numerical value of card
+ * @card: Card string
+ * Return: Numerical value
  */
-int card_value(const char *value)
+static int card_value(const char *card)
 {
-	if (strcmp(value, "Ace") == 0)
+	if (strcmp(card, "Ace") == 0)
 		return (1);
-	if (strcmp(value, "Jack") == 0)
+	if (strcmp(card, "Jack") == 0)
 		return (11);
-	if (strcmp(value, "Queen") == 0)
+	if (strcmp(card, "Queen") == 0)
 		return (12);
-	if (strcmp(value, "King") == 0)
+	if (strcmp(card, "King") == 0)
 		return (13);
-	return (atoi(value));
+	return (atoi(card));
 }
 
 /**
- * swap_nodes - Swap two nodes in a list.
- * @node1: First node.
- * @node2: Second node.
+ * cmp_nodes - Compare two cards
+ * @node1: First node
+ * @node2: Second node
+ * Return: 1 if node1 > node2 else 0
  */
-void swap_nodes(deck_node_t **node1, deck_node_t **node2)
+static int cmp_nodes(deck_node_t *node1, deck_node_t *node2)
 {
-	deck_node_t *tmp = (*node1)->prev;
-	(*node1)->prev = (*node2)->prev;
-	(*node1)->next = (*node2)->next;
-	(*node2)->prev = tmp;
-	(*node2)->next = (*node1);
-	if ((*node1)->prev)
-		(*node1)->prev->next = (*node1);
-	if ((*node1)->next)
-		(*node1)->next->prev = (*node1);
-	if ((*node2)->prev)
-		(*node2)->prev->next = (*node2);
-	(*node2)->next->prev = (*node2);
+	int val1 = card_value(node1->card->value);
+	int val2 = card_value(node2->card->value);
+	int kind1 = node1->card->kind;
+	int kind2 = node2->card->kind;
+
+	if (kind1 == kind2)
+		return (val1 > val2);
+	return (kind1 > kind2);
 }
 
 /**
- * sort_deck - Sort a deck of cards.
- * @deck: Pointer to the head of the list.
+ * sort_deck - Sort deck of cards
+ * @deck: Pointer to deck
  */
 void sort_deck(deck_node_t **deck)
 {
-	deck_node_t *current, *sorted = NULL;
-	int swapped;
+	deck_node_t *curr, *next, *tmp;
 
-	if (!deck || !(*deck) || !(*deck)->next)
+	if (!deck || !*deck || !(*deck)->next)
 		return;
 
-	do {
-		swapped = 0;
-		current = *deck;
-
-		while (current->next != sorted)
+	for (curr = *deck; curr; curr = next)
+	{
+		next = curr->next;
+		for (tmp = curr; tmp->prev && cmp_nodes(tmp, tmp->prev); tmp = tmp->prev)
 		{
-			if (current->card->kind > current->next->card->kind ||
-				(current->card->kind == current->next->card->kind &&
-				card_value(current->card->value) >
-				card_value(current->next->card->value)))
-			{
-				swap_nodes(&current, &current->next);
-				swapped = 1;
-
-				if (current->prev == NULL)
-					*deck = current;
-			}
-			if (current->next)
-				current = current->next;
+			tmp->prev->next = tmp->next;
+			if (tmp->next)
+				tmp->next->prev = tmp->prev;
+			tmp->next = tmp->prev;
+			tmp->prev = tmp->prev->prev;
+			tmp->next->prev = tmp;
+			if (tmp->prev)
+				tmp->prev->next = tmp;
+			else
+				*deck = tmp;
 		}
-		sorted = current;
-	} while (swapped);
+	}
 }
