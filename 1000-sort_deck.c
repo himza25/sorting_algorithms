@@ -2,47 +2,40 @@
 #include <stdlib.h>
 
 /**
- * get_card_value - gets the numerical value of a card.
- * @card: pointer to a card.
+ * card_compare - Compares two card nodes
+ * @a: First card node
+ * @b: Second card node
  *
- * Return: numerical value of the card.
- */
-int get_card_value(const card_t *card)
-{
-	/* Handle face cards and ace */
-	if (card->value[0] == 'A')
-		return (1);
-	if (card->value[0] == 'K')
-		return (13);
-	if (card->value[0] == 'Q')
-		return (12);
-	if (card->value[0] == 'J')
-		return (11);
-	return (atoi(card->value));
-}
-
-/**
- * card_compare - compares two cards.
- * @a: pointer to a card pointer.
- * @b: pointer to a card pointer.
- *
- * Return: negative if a < b, 0 if a == b, positive if a > b.
+ * Return: Difference of kind and value
  */
 int card_compare(const void *a, const void *b)
 {
 	const card_t *card_a = *(const card_t **)a;
 	const card_t *card_b = *(const card_t **)b;
-	int suit_diff = card_b->kind - card_a->kind;
+	int value_a, value_b;
 
-	if (suit_diff)
-		return (suit_diff);
-	return (get_card_value(card_a) - get_card_value(card_b));
+	if (card_a->kind > card_b->kind)
+		return (1);
+	if (card_a->kind < card_b->kind)
+		return (-1);
+
+	value_a = (card_a->value[0] == 'A') ? 1 :
+		(card_a->value[0] == 'K') ? 13 :
+		(card_a->value[0] == 'Q') ? 12 :
+		(card_a->value[0] == 'J') ? 11 : atoi(card_a->value);
+
+	value_b = (card_b->value[0] == 'A') ? 1 :
+		(card_b->value[0] == 'K') ? 13 :
+		(card_b->value[0] == 'Q') ? 12 :
+		(card_b->value[0] == 'J') ? 11 : atoi(card_b->value);
+
+	return (value_a - value_b);
 }
 
 /**
- * list_to_array - converts a linked list to an array.
- * @deck: pointer to the head of the linked list.
- * @arr: pointer to an array of card pointers.
+ * list_to_array - Converts a linked list to an array
+ * @deck: Head of the linked list
+ * @arr: Array of card pointers
  */
 void list_to_array(deck_node_t *deck, const card_t **arr)
 {
@@ -56,9 +49,9 @@ void list_to_array(deck_node_t *deck, const card_t **arr)
 }
 
 /**
- * array_to_list - converts an array to a linked list.
- * @arr: pointer to an array of card pointers.
- * @deck: pointer to the head of the linked list.
+ * array_to_list - Converts an array to a linked list
+ * @arr: Array of card pointers
+ * @deck: Head of the linked list
  */
 void array_to_list(const card_t **arr, deck_node_t *deck)
 {
@@ -74,8 +67,8 @@ void array_to_list(const card_t **arr, deck_node_t *deck)
 }
 
 /**
- * sort_deck - sorts a deck of cards.
- * @deck: double pointer to the head of the linked list.
+ * sort_deck - Sorts a deck of cards
+ * @deck: Double pointer to the head of the linked list
  */
 void sort_deck(deck_node_t **deck)
 {
