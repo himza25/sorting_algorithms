@@ -1,70 +1,57 @@
-#include "deck.h"
+#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include "deck.h"
 
 /**
  * compare_cards - Compares two cards.
- * @a: First card.
- * @b: Second card.
- * Return: Difference in cards.
+ * @a: Pointer to the first card.
+ * @b: Pointer to the second card.
+ * Return: Difference between cards.
  */
 int compare_cards(const void *a, const void *b)
 {
 	const deck_node_t *nodeA = *(const deck_node_t **)a;
 	const deck_node_t *nodeB = *(const deck_node_t **)b;
-	int valueA = strcmp(nodeA->card->value, nodeB->card->value);
-	int kindA = nodeA->card->kind;
-	int kindB = nodeB->card->kind;
+	const char *values[] = {"Ace", "2", "3", "4", "5", "6", "7", "8", "9",
+			"10", "Jack", "Queen", "King"};
+	int i, valueA, valueB;
 
-	if (kindA != kindB)
-		return (kindA - kindB);
+	for (i = 0; i < 13; i++)
+	{
+		if (strcmp(nodeA->card->value, values[i]) == 0)
+			valueA = i;
+		if (strcmp(nodeB->card->value, values[i]) == 0)
+			valueB = i;
+	}
 
-	if (valueA == 0)
-		return (0);
+	if (nodeA->card->kind == nodeB->card->kind)
+		return (valueA - valueB);
 
-	if (strcmp(nodeA->card->value, "Ace") == 0)
-		return (-1);
-	if (strcmp(nodeB->card->value, "Ace") == 0)
-		return (1);
-	if (strcmp(nodeA->card->value, "King") == 0)
-		return (1);
-	if (strcmp(nodeB->card->value, "King") == 0)
-		return (-1);
-	if (strcmp(nodeA->card->value, "Queen") == 0)
-		return (1);
-	if (strcmp(nodeB->card->value, "Queen") == 0)
-		return (-1);
-	if (strcmp(nodeA->card->value, "Jack") == 0)
-		return (1);
-	if (strcmp(nodeB->card->value, "Jack") == 0)
-		return (-1);
-
-	return (valueA);
+	return ((int)nodeA->card->kind - (int)nodeB->card->kind);
 }
 
 /**
  * sort_deck - Sorts a deck of cards.
- * @deck: Deck to sort.
+ * @deck: Pointer to the head of the deck.
  */
 void sort_deck(deck_node_t **deck)
 {
-	deck_node_t *current = *deck;
-	deck_node_t **array;
-	size_t i = 0, size = 52;
+	deck_node_t **array, *current = *deck;
+	size_t size = 0, i = 0;
+
+	while (current)
+		current = current->next, size++;
 
 	array = malloc(sizeof(deck_node_t *) * size);
 	if (!array)
 		return;
 
-	while (current)
-	{
-		array[i++] = current;
-		current = current->next;
-	}
+	for (i = 0, current = *deck; i < size; i++, current = current->next)
+		array[i] = current;
 
 	qsort(array, size, sizeof(deck_node_t *), compare_cards);
 
-	for (i = 0; i < size; ++i)
+	for (i = 0; i < size; i++)
 	{
 		array[i]->prev = i > 0 ? array[i - 1] : NULL;
 		array[i]->next = i < size - 1 ? array[i + 1] : NULL;
